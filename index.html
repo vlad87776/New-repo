@@ -3,143 +3,226 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sea SQL Python</title>
+    <title>OriginalHub | The Future of Code</title>
     
     <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css">
     <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;500;700&display=swap" rel="stylesheet">
 
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', sans-serif; color: white; background-color: #001a33; }
-        
-        /* Твоя крутая загрузка */
-        #loading-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #002952; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; z-index: 9999;
-            transition: opacity 0.5s ease;
-        }
-        .spinner {
-            width: 50px; height: 50px; border: 5px solid rgba(255,255,255,0.3);
-            border-top: 5px solid #00b4d8; border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        .hero {
-            background: linear-gradient(rgba(0, 41, 82, 0.4), rgba(0, 41, 82, 0.4)), 
-                        url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1920&q=80');
-            background-size: cover; background-position: center;
-            height: 100vh; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; text-align: center;
+        :root {
+            --neon-blue: #00f2ff;
+            --deep-ocean: #000c18;
+            --glass: rgba(0, 242, 255, 0.05);
         }
 
-        .nav-buttons { position: absolute; top: 20px; right: 20px; z-index: 10; }
-        .btn { padding: 10px 25px; margin-left: 10px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; transition: 0.3s; color: white; }
-        .btn-login { background-color: transparent; border: 2px solid #ffffff; }
-        .btn-register { background-color: #0077b6; }
-
-        /* Поля ввода */
-        .input-group {
-            background: rgba(0, 0, 0, 0.6);
-            padding: 20px;
-            border-radius: 15px;
-            margin-top: 20px;
-            border: 1px solid #00b4d8;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+        body {
+            background-color: var(--deep-ocean);
+            color: #e0f7fa;
+            font-family: 'Fira Code', monospace;
+            background-image: 
+                radial-gradient(circle at 50% 50%, #001a33 0%, #000c18 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
         }
-        input {
-            padding: 10px;
-            border-radius: 5px;
-            border: none;
+
+        .neon-border {
+            border: 1px solid rgba(0, 242, 255, 0.3);
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.1);
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tab-btn {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+
+        .tab-btn.active {
+            color: var(--neon-blue);
+            border-bottom: 2px solid var(--neon-blue);
+            text-shadow: 0 0 10px var(--neon-blue);
+        }
+
+        input, textarea {
+            background: rgba(0, 0, 0, 0.4) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            color: var(--neon-blue) !important;
+        }
+
+        input:focus {
+            border-color: var(--neon-blue) !important;
             outline: none;
-            width: 250px;
         }
-        #python-output { margin-top: 15px; font-weight: bold; color: #00b4d8; }
+
+        /* Анимация загрузки */
+        #loader {
+            position: fixed; inset: 0; background: var(--deep-ocean);
+            z-index: 100; display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+        }
+
+        .scanner {
+            width: 200px; height: 2px; background: var(--neon-blue);
+            box-shadow: 0 0 15px var(--neon-blue);
+            animation: scan 2s infinite;
+        }
+
+        @keyframes scan {
+            0%, 100% { transform: translateY(-20px); opacity: 0; }
+            50% { transform: translateY(20px); opacity: 1; }
+        }
     </style>
 </head>
 <body>
 
-    <div id="loading-screen">
-        <div class="spinner"></div>
-        <p style="margin-top: 20px; font-weight: bold;">Загрузка Python & SQL...</p>
+    <div id="loader">
+        <div class="scanner mb-4"></div>
+        <div class="text-xs uppercase tracking-[0.5em] text-cyan-400 animate-pulse">Initializing OriginalHub...</div>
     </div>
 
-    <div class="nav-buttons">
-        <button class="btn btn-login" id="login-nav">Логин</button>
-        <button class="btn btn-register" id="reg-nav">Регистрация</button>
-    </div>
-
-    <section class="hero">
-        <h1 id="main-title">Морской SQL</h1>
-        
-        <div class="input-group">
-            <input type="text" id="user-input" placeholder="Введите имя...">
-            <input type="password" id="pass-input" placeholder="Пароль...">
-            <button class="btn btn-register" id="action-btn">Отправить</button>
-            <div id="python-output">Ожидание...</div>
+    <nav class="flex justify-between items-center p-6 border-b border-white/10 glass-panel m-4">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-cyan-500 rounded-sm rotate-45 shadow-[0_0_15px_#00f2ff]"></div>
+            <span class="text-xl font-black tracking-tighter">ORIGINAL<span class="text-cyan-400">HUB</span></span>
         </div>
-    </section>
+        <div class="flex gap-8">
+            <button onclick="switchTab('sql')" id="tab-sql" class="tab-btn active uppercase text-sm font-bold">Sea SQL</button>
+            <button onclick="switchTab('cpp')" id="tab-cpp" class="tab-btn uppercase text-sm font-bold">C++ Compiler</button>
+        </div>
+        <div class="text-[10px] text-cyan-700 font-mono">STATUS: OPTIMAL</div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto p-4">
+        
+        <div id="sql-view" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-1 space-y-4">
+                <div class="glass-panel p-6 neon-border">
+                    <h2 class="text-cyan-400 text-sm mb-4 font-bold">// DATABASE AUTH</h2>
+                    <input type="text" id="user-input" placeholder="USERNAME" class="w-full p-3 rounded mb-3 font-mono text-sm">
+                    <input type="password" id="pass-input" placeholder="ACCESS_CODE" class="w-full p-3 rounded mb-4 font-mono text-sm">
+                    
+                    <div class="grid grid-cols-2 gap-2 mb-4">
+                        <button id="reg-mode" class="text-[10px] border border-cyan-900 p-2 hover:bg-cyan-900/30 transition">SET: REGISTER</button>
+                        <button id="login-mode" class="text-[10px] border border-cyan-900 p-2 hover:bg-cyan-900/30 transition">SET: LOGIN</button>
+                    </div>
+
+                    <button id="run-sql-btn" class="w-full bg-cyan-500 text-black font-black py-4 hover:bg-white transition duration-500 shadow-[0_0_20px_rgba(0,242,255,0.4)]">
+                        EXECUTE SQL_QUERY
+                    </button>
+                </div>
+            </div>
+
+            <div class="lg:col-span-2">
+                <div class="glass-panel p-2 h-full flex flex-col">
+                    <div class="bg-black/40 p-3 rounded-t-lg border-b border-white/10 flex justify-between">
+                        <span class="text-[10px] text-gray-500 uppercase">System Terminal</span>
+                        <div class="flex gap-1">
+                            <div class="w-2 h-2 rounded-full bg-red-500/50"></div>
+                            <div class="w-2 h-2 rounded-full bg-yellow-500/50"></div>
+                            <div class="w-2 h-2 rounded-full bg-green-500/50"></div>
+                        </div>
+                    </div>
+                    <div id="python-output" class="p-6 font-mono text-sm text-cyan-200 overflow-y-auto h-[400px]">
+                        > OriginalHub OS Loaded...<br>
+                        > Awaiting SQL command...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="cpp-view" class="hidden animate-fadeIn">
+            <div class="glass-panel p-1 neon-border">
+                <div class="p-4 border-b border-white/10 flex justify-between items-center">
+                    <span class="text-xs text-cyan-400">main.cpp</span>
+                    <button onclick="compileCpp()" class="bg-green-600 px-6 py-1 text-xs font-bold hover:bg-green-500 transition rounded-full">RUN_COMPILER</button>
+                </div>
+                <textarea id="cpp-editor" class="w-full h-[500px] p-6 font-mono text-sm bg-transparent outline-none resize-none" spellcheck="false">
+#include <iostream>
+
+int main() {
+    std::cout << "--- ORIGINAL HUB V2 ---" << std::endl;
+    std::cout << "System: C++ Execution Successful" << std::endl;
+    return 0;
+}</textarea>
+                <div id="cpp-out" class="bg-black/80 p-6 font-mono text-green-500 border-t border-white/10 min-h-[100px]">
+                    <span class="text-gray-600 underline">Output console:</span><br>
+                    <span id="cpp-result">Ready to build...</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Переключение вкладок
+        function switchTab(tab) {
+            document.getElementById('sql-view').classList.toggle('hidden', tab !== 'sql');
+            document.getElementById('cpp-view').classList.toggle('hidden', tab !== 'cpp');
+            document.getElementById('tab-sql').classList.toggle('active', tab === 'sql');
+            document.getElementById('tab-cpp').classList.toggle('active', tab === 'cpp');
+        }
+
+        // Эмуляция C++
+        function compileCpp() {
+            const res = document.getElementById('cpp-result');
+            res.innerHTML = "<span class='text-blue-400 animate-pulse'>Compiling...</span>";
+            setTimeout(() => {
+                res.innerHTML = "Success: 0 errors.<br>> --- ORIGINAL HUB V2 ---<br>> System: C++ Execution Successful";
+            }, 1200);
+        }
+
+        // Убираем лоадер через 2 сек
+        setTimeout(() => document.getElementById('loader').style.display = 'none', 2000);
+    </script>
 
     <script type="py">
         import sqlite3
-        import random
         from pyscript import display, when
         from js import document
 
-        # Инициализация базы данных в памяти
         conn = sqlite3.connect(':memory:')
-        cursor = conn.cursor()
-        cursor.execute('CREATE TABLE users (name TEXT, password TEXT)')
-        conn.commit()
+        db = conn.cursor()
+        db.execute('CREATE TABLE users (name TEXT, pwd TEXT)')
 
-        # Убираем загрузку
-        loader = document.getElementById("loading-screen")
-        loader.style.opacity = "0"
-        
-        def hide_loader():
-            loader.style.display = "none"
-        
-        import pyodide
-        from js import setTimeout
-        setTimeout(pyodide.ffi.create_proxy(hide_loader), 500)
+        mode = "REG"
 
-        @when("click", "#reg-nav")
-        def mode_reg(e):
-            document.getElementById("main-title").innerText = "Регистрация"
-            document.getElementById("action-btn").innerText = "Создать аккаунт"
+        @when("click", "#reg-mode")
+        def set_reg(e):
+            global mode
+            mode = "REG"
+            document.getElementById("run-sql-btn").innerText = "EXECUTE: CREATE_USER"
 
-        @when("click", "#login-nav")
-        def mode_login(e):
-            document.getElementById("main-title").innerText = "Вход в систему"
-            document.getElementById("action-btn").innerText = "Войти"
+        @when("click", "#login-mode")
+        def set_login(e):
+            global mode
+            mode = "LOGIN"
+            document.getElementById("run-sql-btn").innerText = "EXECUTE: ACCESS_CHECK"
 
-        @when("click", "#action-btn")
-        def process_data(event):
+        @when("click", "#run-sql-btn")
+        def run_query(e):
             name = document.getElementById("user-input").value
             pwd = document.getElementById("pass-input").value
-            mode = document.getElementById("action-btn").innerText
-
+            
             if not name or not pwd:
-                display("❌ Заполни все поля!", target="python-output", append=False)
+                display("! ERROR: NULL_VALUES_DETECTED", target="python-output", append=True)
                 return
 
-            if "Создать" in mode:
-                # SQL запрос на вставку
-                cursor.execute('INSERT INTO users VALUES (?, ?)', (name, pwd))
-                conn.commit()
-                display(f"✅ SQL: Пользователь {name} сохранен!", target="python-output", append=False)
+            if mode == "REG":
+                db.execute('INSERT INTO users VALUES (?,?)', (name, pwd))
+                display(f"> SQL: INSERT SUCCESS -> {name}", target="python-output", append=True)
             else:
-                # SQL запрос на поиск
-                cursor.execute('SELECT * FROM users WHERE name=? AND password=?', (name, pwd))
-                user = cursor.fetchone()
-                if user:
-                    display(f"🔓 SQL: Доступ разрешен! Привет, {name}", target="python-output", append=False)
+                db.execute('SELECT * FROM users WHERE name=? AND pwd=?', (name, pwd))
+                if db.fetchone():
+                    display(f"> ACCESS GRANTED: WELCOME, {name}", target="python-output", append=True)
                 else:
-                    display("🔒 SQL: Ошибка! Неверный логин или пароль", target="python-output", append=False)
+                    display("> ACCESS DENIED: INVALID_CREDENTIALS", target="python-output", append=True)
             
-            # Очистка полей
             document.getElementById("user-input").value = ""
             document.getElementById("pass-input").value = ""
     </script>
