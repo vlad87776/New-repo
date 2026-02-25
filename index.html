@@ -4,19 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Мой первый сайт на GitHub Pages</title>
+    
+    <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css">
+    <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
+
     <style>
-        /* Общие настройки */
         body, html {
             margin: 0;
             padding: 0;
             height: 100%;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: white;
+            overflow: hidden;
         }
 
-        /* Фоновое изображение (море) */
         .hero {
-            background: linear-gradient(rgba(0, 41, 82, 0.5), rgba(0, 41, 82, 0.5)), 
+            background: linear-gradient(rgba(0, 41, 82, 0.4), rgba(0, 41, 82, 0.4)), 
                         url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1920&q=80');
             background-size: cover;
             background-position: center;
@@ -28,11 +31,11 @@
             text-align: center;
         }
 
-        /* Навигация (кнопки) */
         .nav-buttons {
             position: absolute;
             top: 20px;
             right: 20px;
+            z-index: 10;
         }
 
         .btn {
@@ -59,20 +62,20 @@
             color: white;
         }
 
-        .btn:hover {
-            transform: translateY(-2px);
-            opacity: 0.9;
-        }
-
         h1 {
             font-size: 3rem;
             margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.7);
         }
 
-        p {
-            font-size: 1.2rem;
-            max-width: 600px;
+        /* Стиль для вывода из Python */
+        #python-output {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-family: monospace;
+            border-left: 4px solid #0077b6;
         }
     </style>
 </head>
@@ -85,8 +88,26 @@
 
     <section class="hero">
         <h1>Добро пожаловать на море!</h1>
-        <p>Это мой первый сайт, созданный через GitHub Pages. Интерфейс в синих тонах, как и заказывали.</p>
+        
+        <div id="python-output">
+            Загрузка Python...
+        </div>
     </section>
+
+    <script type="py">
+        from datetime import datetime
+        import sys
+
+        # Получаем текущее время
+        now = datetime.now()
+        current_time = now.strftime("%H:%M:%S")
+        
+        # Находим блок на странице и меняем текст
+        from pyscript import display
+        display(f"Привет из Python! Сейчас: {current_time}", target="python-output", append=False)
+        
+        print("Код выполнен успешно!")
+    </script>
 
 </body>
 </html>
