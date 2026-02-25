@@ -3,147 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sea Python App</title>
+    <title>Sea SQL Python</title>
     
     <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css">
     <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
 
     <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            font-family: 'Segoe UI', sans-serif;
-            color: white;
-            background-color: #001a33;
-        }
-
-        /* Экран загрузки */
+        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', sans-serif; color: white; background-color: #001a33; }
+        
+        /* Твоя крутая загрузка */
         #loading-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #002952;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #002952; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; z-index: 9999;
             transition: opacity 0.5s ease;
         }
-
         .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid rgba(255,255,255,0.3);
-            border-top: 5px solid #00b4d8;
-            border-radius: 50%;
+            width: 50px; height: 50px; border: 5px solid rgba(255,255,255,0.3);
+            border-top: 5px solid #00b4d8; border-radius: 50%;
             animation: spin 1s linear infinite;
         }
-
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Основной контент */
         .hero {
             background: linear-gradient(rgba(0, 41, 82, 0.4), rgba(0, 41, 82, 0.4)), 
                         url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1920&q=80');
-            background-size: cover;
-            background-position: center;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
+            background-size: cover; background-position: center;
+            height: 100vh; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; text-align: center;
         }
 
-        .nav-buttons {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            z-index: 10;
-        }
-
-        .btn {
-            padding: 10px 25px;
-            margin-left: 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            transition: 0.3s;
-            text-decoration: none;
-            color: white;
-            display: inline-block;
-        }
-
+        .nav-buttons { position: absolute; top: 20px; right: 20px; z-index: 10; }
+        .btn { padding: 10px 25px; margin-left: 10px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; transition: 0.3s; color: white; }
         .btn-login { background-color: transparent; border: 2px solid #ffffff; }
         .btn-register { background-color: #0077b6; }
-        .btn:hover { transform: scale(1.05); }
 
-        #python-output {
-            background: rgba(0, 0, 0, 0.5);
+        /* Поля ввода */
+        .input-group {
+            background: rgba(0, 0, 0, 0.6);
             padding: 20px;
             border-radius: 15px;
             margin-top: 20px;
-            min-width: 300px;
             border: 1px solid #00b4d8;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
+        input {
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            outline: none;
+            width: 250px;
+        }
+        #python-output { margin-top: 15px; font-weight: bold; color: #00b4d8; }
     </style>
 </head>
 <body>
 
     <div id="loading-screen">
         <div class="spinner"></div>
-        <p style="margin-top: 20px; font-weight: bold;">Загрузка Python...</p>
+        <p style="margin-top: 20px; font-weight: bold;">Загрузка Python & SQL...</p>
     </div>
 
     <div class="nav-buttons">
-        <button class="btn btn-login">Логин</button>
-        <button class="btn btn-register">Регистрация</button>
+        <button class="btn btn-login" id="login-nav">Логин</button>
+        <button class="btn btn-register" id="reg-nav">Регистрация</button>
     </div>
 
     <section class="hero">
-        <h1>Морской Python</h1>
-        <div id="python-output">
-            Ожидаю действий...
+        <h1 id="main-title">Морской SQL</h1>
+        
+        <div class="input-group">
+            <input type="text" id="user-input" placeholder="Введите имя...">
+            <input type="password" id="pass-input" placeholder="Пароль...">
+            <button class="btn btn-register" id="action-btn">Отправить</button>
+            <div id="python-output">Ожидание...</div>
         </div>
     </section>
 
     <script type="py">
+        import sqlite3
         import random
         from pyscript import display, when
         from js import document
 
-        # 1. Функция, которая убирает экран загрузки
-        def setup():
-            loader = document.getElementById("loading-screen")
-            loader.style.opacity = "0"
-            # Даем полсекунды на анимацию и удаляем совсем
-            def remove_loader():
-                loader.style.display = "none"
+        # Инициализация базы данных в памяти
+        conn = sqlite3.connect(':memory:')
+        cursor = conn.cursor()
+        cursor.execute('CREATE TABLE users (name TEXT, password TEXT)')
+        conn.commit()
+
+        # Убираем загрузку
+        loader = document.getElementById("loading-screen")
+        loader.style.opacity = "0"
+        
+        def hide_loader():
+            loader.style.display = "none"
+        
+        import pyodide
+        from js import setTimeout
+        setTimeout(pyodide.ffi.create_proxy(hide_loader), 500)
+
+        @when("click", "#reg-nav")
+        def mode_reg(e):
+            document.getElementById("main-title").innerText = "Регистрация"
+            document.getElementById("action-btn").innerText = "Создать аккаунт"
+
+        @when("click", "#login-nav")
+        def mode_login(e):
+            document.getElementById("main-title").innerText = "Вход в систему"
+            document.getElementById("action-btn").innerText = "Войти"
+
+        @when("click", "#action-btn")
+        def process_data(event):
+            name = document.getElementById("user-input").value
+            pwd = document.getElementById("pass-input").value
+            mode = document.getElementById("action-btn").innerText
+
+            if not name or not pwd:
+                display("❌ Заполни все поля!", target="python-output", append=False)
+                return
+
+            if "Создать" in mode:
+                # SQL запрос на вставку
+                cursor.execute('INSERT INTO users VALUES (?, ?)', (name, pwd))
+                conn.commit()
+                display(f"✅ SQL: Пользователь {name} сохранен!", target="python-output", append=False)
+            else:
+                # SQL запрос на поиск
+                cursor.execute('SELECT * FROM users WHERE name=? AND password=?', (name, pwd))
+                user = cursor.fetchone()
+                if user:
+                    display(f"🔓 SQL: Доступ разрешен! Привет, {name}", target="python-output", append=False)
+                else:
+                    display("🔒 SQL: Ошибка! Неверный логин или пароль", target="python-output", append=False)
             
-            import pyodide
-            from js import setTimeout
-            setTimeout(pyodide.ffi.create_proxy(remove_loader), 500)
-
-        # Вызываем загрузку
-        setup()
-
-        # 2. Логика кнопок
-        @when("click", ".btn-register")
-        def register(event):
-            nicks = ["Морской_Волк", "Дельфин_Кодер", "Краб_Гитхабович", "Акула_Пайтона"]
-            nick = random.choice(nicks)
-            display(f"✅ Регистрация: Твой позывной <b>{nick}</b>", target="python-output", append=False)
-
-        @when("click", ".btn-login")
-        def login(event):
-            display("🔑 Python проверил ключи: Вход разрешен!", target="python-output", append=False)
+            # Очистка полей
+            document.getElementById("user-input").value = ""
+            document.getElementById("pass-input").value = ""
     </script>
-
 </body>
 </html>
