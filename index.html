@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мой первый сайт на GitHub Pages</title>
+    <style>
+        /* Общие настройки */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: white;
+        }
+
+        /* Фоновое изображение (море) */
+        .hero {
+            background: linear-gradient(rgba(0, 41, 82, 0.5), rgba(0, 41, 82, 0.5)), 
+                        url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        /* Навигация (кнопки) */
+        .nav-buttons {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        .btn {
+            padding: 10px 25px;
+            margin-left: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-login {
+            background-color: transparent;
+            border: 2px solid #ffffff;
+            color: white;
+        }
+
+        .btn-register {
+            background-color: #0077b6;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        p {
+            font-size: 1.2rem;
+            max-width: 600px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="nav-buttons">
+        <a href="#" class="btn btn-login">Логин</a>
+        <a href="#" class="btn btn-register">Регистрация</a>
+    </div>
+
+    <section class="hero">
+        <h1>Добро пожаловать на море!</h1>
+        <p>Это мой первый сайт, созданный через GitHub Pages. Интерфейс в синих тонах, как и заказывали.</p>
+    </section>
+
+</body>
+</html>
