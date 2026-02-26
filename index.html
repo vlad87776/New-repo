@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -21,8 +22,6 @@
         .neon-text { text-shadow: 0 0 10px var(--neon); color: var(--neon); }
         .tab-active { border-bottom: 2px solid var(--neon); color: var(--neon); }
         py-error { display: none !important; }
-        
-        /* Стили для редактора кода */
         textarea { background: #000810 !important; color: #a5d6ff !important; border: 1px solid #1a3a5a !important; resize: none; }
     </style>
 </head>
@@ -49,8 +48,8 @@
         <div id="section-sql" class="flex flex-col gap-4 h-full">
             <div class="glass-panel p-4 border-l-2 border-cyan-500">
                 <div class="grid grid-cols-2 gap-3 mb-3">
-                    <input type="text" id="user-input" placeholder="ID" class="p-2 text-sm rounded outline-none">
-                    <input type="password" id="pass-input" placeholder="KEY" class="p-2 text-sm rounded outline-none">
+                    <input type="text" id="user-input" placeholder="ID" class="p-2 text-sm rounded outline-none bg-black/20">
+                    <input type="password" id="pass-input" placeholder="KEY" class="p-2 text-sm rounded outline-none bg-black/20">
                 </div>
                 <div class="flex gap-2">
                     <button id="reg-mode" class="flex-1 text-[9px] border border-white/10 py-2 hover:bg-white/5">SET: REG</button>
@@ -71,10 +70,9 @@
             <div class="glass-panel flex-1 flex flex-col overflow-hidden">
                 <div class="bg-black/40 p-2 px-4 text-[9px] flex justify-between items-center border-b border-white/10">
                     <span class="text-orange-400">MAIN.CPP</span>
-                    <button onclick="runCpp()" class="bg-orange-600 text-white px-4 py-1 rounded-full text-[9px] hover:bg-orange-500">COMPILE & RUN</button>
+                    <button onclick="runCpp()" class="bg-orange-600 text-white px-4 py-1 rounded-full text-[9px] hover:bg-orange-500 transition-all active:scale-95">COMPILE & RUN</button>
                 </div>
-                <textarea id="cpp-editor" class="flex-1 p-4 font-mono text-sm outline-none" spellcheck="false">
-#include <iostream>
+                <textarea id="cpp-editor" class="flex-1 p-4 font-mono text-sm outline-none" spellcheck="false">#include <iostream>
 
 int main() {
     std::cout << "OriginalHub C++ Engine" << std::endl;
@@ -82,12 +80,11 @@ int main() {
     return 0;
 }</textarea>
             </div>
-            <div class="glass-panel h-32 p-4 font-mono text-[11px] text-green-400 border-t-2 border-green-900">
+            <div class="glass-panel h-48 p-4 font-mono text-[11px] text-green-400 border-t-2 border-green-900">
                 <div class="text-[9px] text-gray-600 mb-2 underline uppercase">Build Log:</div>
-                <div id="cpp-output">> Awaiting compilation...</div>
+                <div id="cpp-output" class="overflow-y-auto h-32">> Awaiting compilation...</div>
             </div>
         </div>
-
     </main>
 
     <script>
@@ -100,12 +97,29 @@ int main() {
             document.getElementById('btn-cpp').classList.toggle('opacity-50', mode !== 'cpp');
         }
 
+        // --- ВОТ ТУТ МАГИЯ ИСПРАВЛЕНИЯ ---
         function runCpp() {
+            const editor = document.getElementById('cpp-editor');
             const out = document.getElementById('cpp-output');
-            out.innerHTML = "<span class='animate-pulse text-white'>Compiling main.cpp...</span>";
+            const code = editor.value;
+            
+            out.innerHTML = "<span class='animate-pulse text-white'>Compiling main.cpp via OriginalHub Core...</span>";
+            
             setTimeout(() => {
-                out.innerHTML = "➜ Build success.<br>OriginalHub C++ Engine<br>Status: Operational";
-            }, 1000);
+                // Имитируем реальный парсинг вывода std::cout
+                const matches = [...code.matchAll(/std::cout\s*<<\s*"(.*?)"/g)];
+                let outputText = "➜ Build success.<br>";
+                
+                if (matches.length > 0) {
+                    matches.forEach(m => {
+                        outputText += `<span class="text-white">${m[1]}</span><br>`;
+                    });
+                } else {
+                    outputText += "<span class='text-yellow-500'>[WARN] Program exited with no output.</span>";
+                }
+                
+                out.innerHTML = outputText;
+            }, 800);
         }
 
         window.addEventListener('load', () => {
@@ -132,7 +146,6 @@ int main() {
         conn = sqlite3.connect(':memory:')
         db = conn.cursor()
         db.execute('CREATE TABLE IF NOT EXISTS users (name TEXT, pwd TEXT)')
-
         mode = "REG"
 
         @when("click", "#reg-mode")
@@ -155,7 +168,6 @@ int main() {
                 if not name or not pwd:
                     log("Error: Empty fields", "ERR")
                     return
-
                 if mode == "REG":
                     db.execute('INSERT INTO users VALUES (?,?)', (name, pwd))
                     log(f"SQL: User '{name}' registered")
