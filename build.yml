@@ -13,7 +13,7 @@ jobs:
       uses: ilammy/msvc-dev-cmd@v1
 
     - name: Compile C++
-      run: |
+      run: cl.exe /O2 /EHsc main.cpp /Fe:MyProgram.exe /link /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup
         cl.exe /O2 /EHsc main.cpp /Fe:MyProgram.exe
 
     - name: Upload Artifact
