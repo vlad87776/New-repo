@@ -1,1 +1,23 @@
+name: Build C++ Exe
 
+on: [push] # Запускать сборку при каждом обновлении кода
+
+jobs:
+  build:
+    runs-on: windows-latest # Используем Windows для создания .exe
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up MSVC
+      uses: ilammy/msvc-dev-cmd@v1
+
+    - name: Compile C++
+      run: |
+        cl.exe /O2 /EHsc main.cpp /Fe:MyProgram.exe
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: compiled-exe
+        path: MyProgram.exe
